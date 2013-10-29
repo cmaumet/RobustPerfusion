@@ -13,3 +13,5 @@ where:
 
 Interactive call (with user interaction):
 asl_robust()
+
+Dependencies: SPM8 (or later), Matlab
