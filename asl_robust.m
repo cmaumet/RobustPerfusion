@@ -28,9 +28,22 @@ function asl_robust(inputFiles, outputFile, huberParam)
     matlabbatch{1}.spm.util.imcalc.options.dtype = 16;
     
     if nargin > 0
-        matlabbatch{1}.spm.util.imcalc.input = inputFiles;
+        inputImg = nifti(inputFiles);
+        % 4-D nifti volume
+        if numel(inputImg.dat.dim) == 4
+            numVolumes = inputImg.dat.dim(4);
+            for i = 1:numVolumes
+                matlabbatch{1}.spm.util.imcalc.input{i,1} = [inputFiles ',' num2str(i)];
+            end
+        else
+            matlabbatch{1}.spm.util.imcalc.input = {inputFiles};
+        end
     end
     if nargin > 1
+        [outputDir, outputName, outputExt] = spm_fileparts(outputFile);
+        matlabbatch{1}.spm.util.imcalc.output = [outputName outputExt];
+        matlabbatch{1}.spm.util.imcalc.outdir = {outputDir};
+        
         matlabbatch{1}.spm.util.imcalc.output = outputFile;
         spm_jobman('run', matlabbatch);
     else
